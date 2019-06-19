@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+		<title>meat consumption</title>
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<style>
+h2 {
+    text-align: center;
+}
+.container {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+svg.bubble{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+<body class="container">
+  <h2>A sample of the meat consumption (in kg) per capita in 2013 (src: FAO)</h2>
+	<script type="text/javascript">
+ 
+
+        dataset = {
+          "children": [
+            {"name":"US", "value":120},
+            {"name":"Australia", "value":111},
+            {"name":"Spain", "value":97},
+            {"name":"Israel", "value":96},
+            {"name":"Canada", "value":94},
+            {"name":"Italy", "value":90},
+            {"name":"Germany", "value":88},
+            {"name":"France", "value":87},
+            {"name":"Brazil", "value":85},
+            {"name":"Russia", "value":69},
+            {"name":"UK", "value":84},
+            {"name":"South Africa", "value":58},
+            {"name":"China", "value":58},
+            {"name":"Saudi", "value":54},
+            {"name":"Japan", "value":45},
+            {"name":"Turkey", "value":25},
+            {"name":"Pakistan", "value":14},
+            {"name":"Indonesia", "value":11},
+            {"name":"Nigeria", "value":8},
+            {"name":"India", "value":4}
+         ]
+        };
+
+        var diameter = 600;
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var bubble = d3.pack(dataset)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubble");
+
+        var nodes = d3.hierarchy(dataset)
+            .sum(function(d) { return d.value; });
+
+        var node = svg.selectAll(".node")
+            .data(bubble(nodes).descendants())
+            .enter()
+            .filter(function(d){
+                return  !d.children
+            })
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        node.append("title")
+            .text(function(d) {
+                return d.data.name + ": " + d.value + " kg";
+            });
+           
+        node.append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d,i) {
+              var myColor = d3.scaleLinear().domain([1,20])
+                              .range(["red", "green"])
+                return myColor(i);
+            });
+
+        node.append("text")
+            .attr("dy", ".2em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.name.substring(0, d.r / 3);
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/4;
+            })
+            .attr("fill", "white");
+
+        node.append("text")
+            .attr("dy", "1.3em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+              return d.data.value;
+            })
+            .attr("font-family",  "Verdana")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+
+        d3.select(self.frameElement)
+            .style("height", diameter + "px");
+
+	</script>
+</body>
+</html>
